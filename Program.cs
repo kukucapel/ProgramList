@@ -362,8 +362,8 @@ namespace _1_0
                 }
                 reader1.Close();
                 
-                Console.WriteLine(string.Join(", ", idListByIdOrder));
-                Console.WriteLine(string.Join(", ", statusOrderList));
+                //Console.WriteLine(string.Join(", ", idListByIdOrder));
+                //Console.WriteLine(string.Join(", ", statusOrderList));
                 for (int j = 0; j < idListByIdOrder.Count; j++)
                 {
                     command.CommandText = $"EXEC WorkSteep4 {idListByIdOrder[j]};";
@@ -699,6 +699,17 @@ namespace _1_0
             Console.ReadKey();
             Console.Clear();
         }
+        static void ConnectBd(string defaultConnectionString)
+        {
+            using (SqlConnection connection = new SqlConnection())
+            {
+                connection.ConnectionString = defaultConnectionString;
+                connection.Open();
+                SqlConnection.ClearAllPools();
+                connection.Close();
+                connection.Dispose();
+            }
+        }
         static void Main(string[] args)
         {
             
@@ -706,19 +717,13 @@ namespace _1_0
             char userInput = ' ';
             int userInputId = -1;
             int maxId = 0;
-
-            Interface ProgramInterface = new Interface();
-
-            
-
-            SqlConnection connection = new SqlConnection();
+            Interface ProgramInterface = new Interface();           
             ProgramInterface.HelloInterface();
             while (true) // подключение
             {
                 try
                 {
-                    connection.ConnectionString = defaultConnectionString;
-                    connection.Open();
+                    ConnectBd(defaultConnectionString);
                     ProgramInterface.ConnectTrueDbInterface();
                         
                     break;
@@ -728,10 +733,12 @@ namespace _1_0
                     
                     ProgramInterface.ConnectFalseInterface();
                     defaultConnectionString = Console.ReadLine();
-                    connection.Close();
                     Console.Clear();
                 }
             }
+            SqlConnection connection = new SqlConnection();
+            connection.ConnectionString = defaultConnectionString;
+            connection.Open();
             while (userInput != 'e') //main menu
             {
 
